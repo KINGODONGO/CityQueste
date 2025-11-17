@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CityQuest - Daily Mystery Missions</title>
+
+<!-- Your requested script -->
+<script type='text/javascript' src='//pl28027683.effectivegatecpm.com/8e/ef/69/8eef69561d232c6d20e5935d27bcf535.js'></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #1b1b1b, #333);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 2.4rem;
+        letter-spacing: 1px;
+    }
+
+    #app {
+        background: #222;
+        padding: 25px;
+        margin-top: 30px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    .btn {
+        background: #00b7ff;
+        color: #fff;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 15px;
+        transition: 0.3s;
+        width: 100%;
+    }
+    .btn:hover {
+        background: #008fcc;
+    }
+
+    #clear-btn {
+        background: #ff4444;
+    }
+    #clear-btn:hover {
+        background: #cc0000;
+    }
+
+    #mission-box {
+        margin-top: 20px;
+        padding: 15px;
+        background: #111;
+        border-radius: 8px;
+        display: none;
+    }
+
+    #completed {
+        color: #4caf50;
+        font-weight: bold;
+        display: none;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>CityQuest</h1>
+<p>Daily Mystery Missions Based on Your Location</p>
+
+<div id="app">
+    <button class="btn" onclick="getLocation()">Get Today's Mission</button>
+
+    <div id="mission-box">
+        <h2>Today's Mission</h2>
+        <p id="mission-text"></p>
+
+        <button class="btn" onclick="completeMission()">Mark as Completed</button>
+        <button id="clear-btn" class="btn" onclick="clearMission()">Clear Mission</button>
+
+        <p id="completed">Mission Completed ✔️</p>
+    </div>
+</div>
+
+<script>
+// Mission list
+const missions = [
+    "Find a mural within 500 meters and take a selfie with it.",
+    "Visit a nearby landmark and solve this riddle: 'What has a face but no eyes?' (Answer: A clock!)",
+    "Find a café within walking distance offering a hidden discount.",
+    "Locate a statue nearby and read the first name engraved on it.",
+    "Go to a local park and count how many benches are in a row.",
+    "Find a street art sticker and note what color it is.",
+    "Walk until you see a building with more than 10 floors, then snap a picture of it."
+];
+
+function saveDailyMission(mission) {
+    const today = new Date().toDateString();
+    localStorage.setItem("missionDate", today);
+    localStorage.setItem("dailyMission", mission);
+}
+
+function loadDailyMission() {
+    const today = new Date().toDateString();
+    const savedDate = localStorage.getItem("missionDate");
+
+    if (savedDate === today) {
+        return localStorage.getItem("dailyMission");
+    }
+    return null;
+}
+
+function getLocation() {
+    if (!navigator.geolocation) {
+        alert("Location not supported on this device.");
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(showMission, () => {
+        alert("Unable to get location.");
+    });
+}
+
+function showMission(position) {
+    let mission = loadDailyMission();
+    if (!mission) {
+        mission = missions[Math.floor(Math.random() * missions.length)];
+        saveDailyMission(mission);
+        localStorage.removeItem("missionCompleted");
+    }
+
+    document.getElementById("mission-text").innerText = mission;
+    document.getElementById("mission-box").style.display = "block";
+
+    if (localStorage.getItem("missionCompleted") === "true") {
+        document.getElementById("completed").style.display = "block";
+    } else {
+        document.getElementById("completed").style.display = "none";
+    }
+}
+
+function completeMission() {
+    localStorage.setItem("missionCompleted", "true");
+    document.getElementById("completed").style.display = "block";
+}
+
+function clearMission() {
+    localStorage.removeItem("missionCompleted");
+    localStorage.removeItem("dailyMission");
+    localStorage.removeItem("missionDate");
+
+    document.getElementById("mission-box").style.display = "none";
+    alert("Mission cleared. You can generate a new one!");
+}
+</script>
+</body>
+</html>
